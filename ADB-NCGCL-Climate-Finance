@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Illustrative ADB–NCGCL climate finance platform dashboard for internal discussion.">
+  <title>ADB–NCGCL Climate Finance Platforms</title>
+  <style>
+    :root{
+      --navy:#082f49;--blue:#0c688d;--blue2:#0e7490;--teal:#0f766e;--green:#39a935;
+      --lime:#84cc16;--amber:#f59e0b;--red:#b91c1c;--ink:#172033;--muted:#64748b;
+      --line:#dbe3ea;--soft:#f3f7fa;--white:#fff;--shadow:0 8px 24px rgba(8,47,73,.08);
+      --radius:12px;--max:1440px
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#edf3f6;line-height:1.48}
+    button,input,select{font:inherit}
+    a{color:var(--blue);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .topline{height:6px;background:linear-gradient(90deg,var(--navy),var(--blue),var(--green))}
+    header{background:linear-gradient(125deg,#06283d 0%,#084a66 58%,#0f766e 100%);color:white;padding:30px 24px 25px}
+    .head{max-width:var(--max);margin:auto;display:flex;justify-content:space-between;gap:28px;align-items:flex-start}
+    .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ee8df}
+    h1{font-size:clamp(28px,3vw,44px);line-height:1.08;margin:8px 0 10px;letter-spacing:-.025em;max-width:880px}
+    .subtitle{max-width:850px;color:#dceff3;margin:0;font-size:15px}
+    .headmeta{text-align:right;min-width:225px;font-size:12px;color:#d9edf1}
+    .status{display:inline-flex;gap:8px;align-items:center;margin-bottom:11px;padding:7px 10px;border:1px solid rgba(255,255,255,.26);border-radius:999px;background:rgba(255,255,255,.08);font-weight:700}
+    .dot{width:8px;height:8px;border-radius:50%;background:#fbbf24}
+    .warning{max-width:var(--max);margin:0 auto;background:#fff7ed;border:1px solid #fed7aa;border-top:0;padding:9px 14px;color:#7c2d12;font-size:12px}
+    .navwrap{background:white;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;box-shadow:0 4px 14px rgba(15,23,42,.06)}
+    .nav{max-width:var(--max);margin:auto;display:flex;overflow:auto;padding:0 16px}
+    .nav button{border:0;background:white;color:#475569;padding:15px 18px;white-space:nowrap;cursor:pointer;border-bottom:3px solid transparent;font-size:13px;font-weight:700}
+    .nav button:hover{background:#f8fafc;color:var(--blue)}
+    .nav button.active{color:var(--blue);border-bottom-color:var(--green);background:#f8fbfc}
+    main{max-width:var(--max);margin:0 auto;padding:24px 18px 54px}
+    .section{display:none;animation:fade .2s ease}
+    .section.active{display:block}
+    @keyframes fade{from{opacity:.25;transform:translateY(3px)}to{opacity:1;transform:none}}
+    .pagehead{display:flex;justify-content:space-between;gap:20px;align-items:end;margin:0 0 18px}
+    .pagetitle{font-size:27px;color:var(--navy);margin:0 0 4px;letter-spacing:-.02em}
+    .pagesub{margin:0;color:var(--muted);font-size:14px;max-width:920px}
+    .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:#e6f4f3;color:#0f766e;border:1px solid #b8ded9;border-radius:999px;padding:6px 9px;display:inline-block}
+    .grid{display:grid;gap:16px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+    .span2{grid-column:span 2}
+    .card{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+    .card h2,.card h3{color:var(--navy);margin:0 0 9px;line-height:1.25}
+    .card h2{font-size:19px}.card h3{font-size:15px}
+    .card p{margin:7px 0;color:#475569;font-size:13px}
+    .kpi{position:relative;overflow:hidden;min-height:130px}
+    .kpi:after{content:"";position:absolute;right:-22px;bottom:-28px;width:90px;height:90px;border:18px solid #e7f1f4;border-radius:50%}
+    .kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted)}
+    .kpi .value{font-size:31px;line-height:1;margin:13px 0 7px;font-weight:800;color:var(--blue)}
+    .kpi .note{font-size:11px;color:#64748b;max-width:80%}
+    .callout{border-left:5px solid var(--green);background:#f0fdf4;padding:15px 17px;border-radius:8px}
+    .callout strong{color:#14532d}
+    .flow{display:grid;grid-template-columns:1fr 42px 1fr 42px 1fr 42px 1fr;align-items:stretch;gap:6px;margin-top:12px}
+    .flowbox{border:1px solid #cbd5e1;border-radius:9px;padding:14px;background:#f8fafc;min-height:94px}
+    .flowbox b{display:block;color:var(--navy);font-size:13px;margin-bottom:5px}
+    .flowbox span{font-size:11px;color:#64748b}
+    .arrow{display:grid;place-items:center;font-size:22px;color:var(--blue);font-weight:800}
+    .platform{border-top:5px solid var(--blue)}
+    .platform.b{border-top-color:var(--teal)}.platform.c{border-top-color:var(--amber)}
+    .letter{width:31px;height:31px;display:grid;place-items:center;border-radius:8px;background:var(--navy);color:white;font-weight:800;margin-bottom:10px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+    .chip{font-size:10px;padding:4px 7px;border-radius:999px;background:#eef4f7;color:#335369;border:1px solid #d9e7ed}
+    .miniask{margin-top:12px;border-top:1px solid var(--line);padding-top:10px;font-size:11px;color:#475569}
+    .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+    .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+    .chartbox{height:270px;position:relative}
+    canvas{width:100%;height:100%}
+    .donutrow{display:grid;grid-template-columns:190px 1fr;align-items:center;gap:22px}
+    .donut{width:175px;height:175px;border-radius:50%;background:conic-gradient(var(--teal) 0 60%,var(--blue) 60% 100%);position:relative;display:grid;place-items:center}
+    .donut:after{content:"2019–24";width:102px;height:102px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:800;color:var(--navy);font-size:13px}
+    .statline{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:10px 0;font-size:13px}
+    .statline b{color:var(--navy)}
+    .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}
+    table{border-collapse:collapse;width:100%;font-size:12px;background:white}
+    th{background:#eaf1f5;color:#24475a;text-align:left;padding:10px;position:sticky;top:0;z-index:1}
+    td{padding:10px;border-top:1px solid #e5edf1;vertical-align:top;color:#46566b}
+    tr:hover td{background:#f8fbfc}
+    .money{white-space:nowrap;font-weight:800;color:var(--navy)}
+    .pill{display:inline-block;border-radius:999px;padding:3px 7px;font-size:10px;font-weight:700;background:#e0f2fe;color:#075985}
+    .pill.adapt{background:#dcfce7;color:#166534}.pill.mix{background:#fef3c7;color:#854d0e}
+    .toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0}
+    .toolbar select{border:1px solid #cbd5e1;border-radius:8px;padding:8px;background:white;color:#334155;font-size:12px}
+    .source{font-size:10px!important;color:#718096!important;margin-top:10px!important}
+    .source a{text-decoration:underline}
+    .structure{display:grid;grid-template-columns:1fr 28px 1.15fr 28px 1fr;gap:7px;align-items:center;margin:12px 0}
+    .actor{text-align:center;border-radius:10px;padding:15px 10px;background:#eff6ff;border:1px solid #bfdbfe;min-height:96px}
+    .actor.primary{background:#ecfdf5;border-color:#a7f3d0}
+    .actor b{display:block;color:var(--navy);font-size:13px}.actor small{color:#64748b;font-size:10px}
+    .waterfall{display:flex;height:47px;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #cbd5e1}
+    .waterfall div{display:grid;place-items:center;color:white;font-size:10px;font-weight:800;text-align:center;padding:3px}
+    .wf1{background:#64748b}.wf2{background:var(--blue)}.wf3{background:var(--green)}.wf4{background:#d97706}
+    .inputgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+    .field{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px}
+    .field label{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;display:block;margin-bottom:5px}
+    .field input{width:100%;accent-color:var(--blue)}
+    .field output{font-weight:800;color:var(--navy);font-size:13px}
+    .results{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+    .result{background:#edf7f7;border:1px solid #c6e3e1;border-radius:8px;padding:10px}
+    .result small{display:block;color:#64748b}.result b{color:var(--teal);font-size:16px}
+    .riskgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .risk{padding:11px;border-radius:8px;border:1px solid var(--line);font-size:11px}
+    .risk b{display:block;margin-bottom:4px;color:var(--navy)}
+    .risk.high{border-left:5px solid var(--red)}.risk.med{border-left:5px solid var(--amber)}.risk.low{border-left:5px solid var(--green)}
+    .timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;counter-reset:phase}
+    .phase{border-top:4px solid var(--blue);background:#f8fafc;border-radius:6px;padding:12px;counter-increment:phase}
+    .phase:before{content:"0" counter(phase);display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--blue);color:white;font-weight:800;font-size:11px;margin-bottom:8px}
+    .phase b{display:block;color:var(--navy);font-size:13px}.phase span{font-size:11px;color:#64748b}
+    .scoretable input{width:64px;padding:4px;border:1px solid #cbd5e1;border-radius:5px}
+    .score{font-weight:800;color:var(--blue);font-size:18px}
+    .asklist{counter-reset:ask;display:grid;gap:8px}
+    .ask{counter-increment:ask;display:grid;grid-template-columns:33px 1fr;gap:10px;align-items:start;border:1px solid var(--line);border-radius:9px;padding:11px;background:#fff}
+    .ask:before{content:counter(ask);display:grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:white;font-weight:800}
+    .ask b{color:var(--navy);font-size:13px}.ask p{margin:2px 0;font-size:11px;color:#64748b}
+    details{border:1px solid var(--line);border-radius:8px;background:white;margin:7px 0}
+    summary{padding:11px;font-size:12px;font-weight:700;color:var(--navy);cursor:pointer}
+    details div{padding:0 11px 11px;color:#64748b;font-size:11px}
+    .footer{max-width:var(--max);margin:auto;padding:22px 18px 36px;color:#64748b;font-size:10px;border-top:1px solid #d7e1e7}
+    .printbtn{border:1px solid rgba(255,255,255,.35);color:white;background:rgba(255,255,255,.09);padding:7px 10px;border-radius:7px;cursor:pointer;font-size:11px}
+    @media(max-width:1000px){.g4,.g5{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr}.span2{grid-column:auto}.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.timeline{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:720px){header{padding:22px 16px}.head{display:block}.headmeta{text-align:left;margin-top:18px}.g2,.g4,.g5{grid-template-columns:1fr}.donutrow,.structure{grid-template-columns:1fr}.structure .arrow{transform:rotate(90deg)}.inputgrid,.results,.riskgrid{grid-template-columns:1fr 1fr}.timeline{grid-template-columns:1fr}.pagehead{display:block}.pagehead .tag{margin-top:8px}.nav button{padding:13px 12px}.pagetitle{font-size:23px}}
+    @media print{.navwrap,.printbtn,.warning{display:none}.section{display:block!important;break-before:page}.section:first-of-type{break-before:auto}body{background:white}.card{box-shadow:none}main{max-width:none}.chartbox{height:230px}}
+  </style>
+</head>
+<body>
+  <div class="topline"></div>
+  <header>
+    <div class="head">
+      <div>
+        <div class="eyebrow">NCGCL • Strategic concept for discussion with ADB</div>
+        <h1>From climate programs to scalable private-sector portfolios</h1>
+        <p class="subtitle">A decision dashboard connecting ADB’s Pakistan track record with three illustrative NCGCL risk-sharing platforms: green assets, digitally controlled working capital, and cluster infrastructure.</p>
+      </div>
+      <div class="headmeta">
+        <div class="status"><span class="dot"></span> Internal working draft</div><br>
+        Prepared for Ammar H. Khan<br>
+        ADB discussion • 10 August<br><br>
+        <button class="printbtn" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </header>
+  <div class="warning"><b>Important:</b> Platforms A–C, transaction parameters, scores and asks are illustrative and do not constitute an approved NCGCL product, term sheet, ADB commitment or offer of finance. Public-source figures require final reconciliation against internal documents.</div>
+
+  <div class="navwrap">
+    <nav class="nav" aria-label="Dashboard tabs">
+      <button class="active" data-tab="overview">01 Executive Overview</button>
+      <button data-tab="track">02 ADB Pakistan Track Record</button>
+      <button data-tab="platformA">03 Platform A • Green Assets</button>
+      <button data-tab="platformB">04 Platform B • Digital WC</button>
+      <button data-tab="platformC">05 Platform C • Clusters</button>
+      <button data-tab="partnership">06 Partnership & Next Steps</button>
+    </nav>
+  </div>
+
+  <main>
+    <section id="overview" class="section active">
+      <div class="pagehead">
+        <div><h2 class="pagetitle">Executive Overview</h2><p class="pagesub">The proposition is not another stand-alone credit line. It is an NCGCL-centered platform that combines ADB capital, technical assistance and climate standards with PFI origination and disciplined risk retention.</p></div>
+        <span class="tag">Decision lens</span>
+      </div>
+
+      <div class="grid g4">
+        <div class="card kpi"><div class="label">ADB climate finance • Pakistan</div><div class="value">$3.28bn</div><div class="note">Committed across 2019–2024; portfolio-level benchmark, not project sum.</div></div>
+        <div class="card kpi"><div class="label">Portfolio mix</div><div class="value">60 : 40</div><div class="note">Approximate adaptation-to-mitigation allocation reported by ADB.</div></div>
+        <div class="card kpi"><div class="label">NCGCL platform concepts</div><div class="value">3</div><div class="note">Shared governance and MRV; distinct underwriting and delivery models.</div></div>
+        <div class="card kpi"><div class="label">Immediate objective</div><div class="value">1 pilot</div><div class="note">Select one platform for a joint diagnostic and controlled pilot.</div></div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Strategic bridge: where NCGCL can add value</h2>
+        <div class="flow">
+          <div class="flowbox"><b>ADB track record</b><span>Policy reform, resilient infrastructure, clean energy, financial inclusion and institutional capacity.</span></div><div class="arrow">→</div>
+          <div class="flowbox"><b>Persistent market gap</b><span>Small-ticket portfolios face perceived credit risk, weak data, high origination cost and limited climate MRV.</span></div><div class="arrow">→</div>
+          <div class="flowbox"><b>NCGCL risk layer</b><span>Portfolio eligibility, PFI risk retention, calibrated guarantee, claims governance and recoveries.</span></div><div class="arrow">→</div>
+          <div class="flowbox"><b>Scalable outcome</b><span>Multi-PFI financing of distributed climate assets, controlled working capital and shared infrastructure.</span></div>
+        </div>
+      </div>
+
+      <div class="grid g3" style="margin-top:16px">
+        <article class="card platform"><div class="letter">A</div><h2>Green Asset Finance</h2><p>Finance distributed assets whose energy or operating savings strengthen repayment capacity.</p><div class="chips"><span class="chip">School solar</span><span class="chip">Cold storage</span><span class="chip">Efficiency</span><span class="chip">Clean production</span></div><div class="miniask"><b>Illustrative ADB role:</b> concessional tranche, funded first loss/counter-guarantee, asset standards and MRV TA.</div></article>
+        <article class="card platform b"><div class="letter">B</div><h2>Digitally Controlled Working Capital</h2><p>Short-tenor finance with observable supplier payments, inventory, sales proceeds and repayment flows.</p><div class="chips"><span class="chip">E-commerce</span><span class="chip">Agri inputs</span><span class="chip">Receivables</span><span class="chip">Seasonal cycles</span></div><div class="miniask"><b>Illustrative ADB role:</b> diagnostic, data architecture, PFI capacity and portfolio risk participation.</div></article>
+        <article class="card platform c"><div class="letter">C</div><h2>Cluster Infrastructure Finance</h2><p>Finance an anchor operator or SPV whose cash flows aggregate demand across many small producers.</p><div class="chips"><span class="chip">Cold chain</span><span class="chip">Warehousing</span><span class="chip">Processing</span><span class="chip">Mechanization</span></div><div class="miniask"><b>Illustrative ADB role:</b> project preparation, viability-gap/first-loss support, safeguards and long-tenor capital.</div></article>
+      </div>
+
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card">
+          <h2>ADB finance pattern in the selected evidence set</h2>
+          <div class="chartbox"><canvas id="overviewChart" aria-label="Selected ADB initiatives by financing amount"></canvas></div>
+          <p class="source">Selected initiatives only; values are ADB financing, not total project cost. This chart is not the $3.28bn climate-finance portfolio breakdown.</p>
+        </div>
+        <div class="card">
+          <h2>Four decisions for Ammar</h2>
+          <div class="asklist">
+            <div class="ask"><div><b>Select the lead platform</b><p>Use the comparative scorecard as a discussion aid; Platform A is the fastest route to a measurable pilot.</p></div></div>
+            <div class="ask"><div><b>Set the risk-retention principle</b><p>PFIs should retain a meaningful deductible or first-loss exposure; no zero-risk origination.</p></div></div>
+            <div class="ask"><div><b>Define the ADB ask</b><p>Prioritize funded risk capital, counter-guarantee and diagnostic TA over an undifferentiated credit line.</p></div></div>
+            <div class="ask"><div><b>Choose disclosure level</b><p>Keep public-source evidence separate from internal pricing, policy limits and pipeline data.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="track" class="section">
+      <div class="pagehead">
+        <div><h2 class="pagetitle">ADB Climate & Sustainable Finance in Pakistan</h2><p class="pagesub">A selected evidence base showing the instruments, partners and delivery capabilities most relevant to a future NCGCL platform. It is not an exhaustive ADB country portfolio.</p></div>
+        <span class="tag">Public sources • accessed 28 Jul 2026</span>
+      </div>
+
+      <div class="grid g2">
+        <div class="card">
+          <h2>Reported climate-finance allocation, 2019–2024</h2>
+          <div class="donutrow">
+            <div class="donut" aria-label="60 percent adaptation, 40 percent mitigation"></div>
+            <div>
+              <div class="statline"><span><i style="background:var(--teal);width:10px;height:10px;display:inline-block;margin-right:6px"></i>Adaptation</span><b>~60%</b></div>
+              <div class="statline"><span><i style="background:var(--blue);width:10px;height:10px;display:inline-block;margin-right:6px"></i>Mitigation</span><b>~40%</b></div>
+              <div class="statline"><span>Total committed</span><b>$3.28bn</b></div>
+              <p class="source">Source: ADB, Pakistan Country Climate Investment and Action Plan linked to CPS 2026–2030.</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>What the track record demonstrates</h2>
+          <div class="riskgrid">
+            <div class="risk low"><b>Policy + investment</b>ADB has paired reform programs with investment components in energy and resilience.</div>
+            <div class="risk low"><b>Financial intermediation</b>Recent energy-transition design explicitly includes an FIL for SME efficiency investment.</div>
+            <div class="risk low"><b>Risk institutions</b>NDRMF provides a precedent for a dedicated national vehicle and eligible-subproject financing.</div>
+            <div class="risk med"><b>Private-sector reach</b>Distributed SME climate portfolios remain a less visible part of the selected Pakistan evidence.</div>
+            <div class="risk med"><b>Credit enhancement</b>The 2026 country overview cites ADB’s first policy-based guarantee in Pakistan—an important instrument precedent.</div>
+            <div class="risk med"><b>MRV architecture</b>Common eligibility, safeguards and portfolio reporting are required to aggregate multiple PFIs.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="toolbar">
+          <div><h2 style="margin:0">Selected ADB-relevant initiatives</h2><p style="margin:3px 0 0">Filter by primary strategic relevance.</p></div>
+          <select id="portfolioFilter" aria-label="Filter initiatives">
+            <option value="all">All initiatives</option><option value="adaptation">Adaptation & resilience</option><option value="mitigation">Energy & mitigation</option><option value="finance">Financial systems</option>
+          </select>
+        </div>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Program / project</th><th>Year</th><th>ADB financing</th><th>Instrument</th><th>Core partners / channel</th><th>Activities & relevance to NCGCL</th><th>Source</th></tr></thead>
+            <tbody id="portfolioBody">
+              <tr data-group="adaptation"><td><b>Climate and Disaster Resilience Enhancement Program</b><br><span class="pill adapt">Adaptation</span></td><td>2024</td><td class="money">$500m</td><td>Policy-based loan</td><td>Government of Pakistan; national systems</td><td>Climate and disaster-risk reforms and resilience financing. Shows ADB appetite for system-level reform linked to capital.</td><td><a href="https://www.adb.org/projects/58054-001/main" target="_blank" rel="noopener">58054-001 ↗</a></td></tr>
+              <tr data-group="adaptation"><td><b>Flood Emergency Reconstruction and Resilience Project</b><br><span class="pill adapt">Resilience</span></td><td>2015</td><td class="money">$220.04m</td><td>Project loan</td><td>Provincial planning and implementing agencies</td><td>Hazard-resilient roads and rural flood protection. Demonstrates build-back-better infrastructure delivery.</td><td><a href="https://www.adb.org/projects/49038-001/main" target="_blank" rel="noopener">49038-001 ↗</a></td></tr>
+              <tr data-group="adaptation"><td><b>National Disaster Risk Management Fund</b><br><span class="pill adapt">Risk financing</span></td><td>2016</td><td class="money">$200m</td><td>Financial intermediation / fund</td><td>NDRMF; Government; Australia cofinancing</td><td>Finances up to 70% of eligible resilience subprojects and contemplates residual-risk transfer. Closest institutional precedent for a dedicated risk platform.</td><td><a href="https://www.adb.org/projects/50316-001/main" target="_blank" rel="noopener">50316-001 ↗</a></td></tr>
+              <tr data-group="mitigation"><td><b>Access to Clean Energy Investment Program</b><br><span class="pill">Mitigation</span></td><td>2016</td><td class="money">$325m</td><td>Multitranche financing facility</td><td>Federal/provincial energy agencies</td><td>Clean-energy access and installations. Provides technology, procurement and delivery lessons for distributed green assets.</td><td><a href="https://www.adb.org/projects/49056-002/main" target="_blank" rel="noopener">49056-002 ↗</a></td></tr>
+              <tr data-group="mitigation"><td><b>Sustainable Energy Sector Reform Program • Subprogram 3</b><br><span class="pill mix">Policy + energy</span></td><td>2017</td><td class="money">$300m</td><td>Policy-based loan</td><td>Government energy institutions; AFD cofinance</td><td>Energy-sector reform; third ADB subprogram brought cumulative financing to $1bn. Demonstrates long-horizon programmatic engagement.</td><td><a href="https://www.adb.org/news/adb-afd-approved-over-400-million-accelerate-energy-reforms-pakistan" target="_blank" rel="noopener">ADB release ↗</a></td></tr>
+              <tr data-group="finance"><td><b>Women Inclusive Finance Sector Development Program</b><br><span class="pill mix">Inclusive finance</span></td><td>2023</td><td class="money">$155.5m</td><td>Policy-based loan + FIL + TA</td><td>Government; financial institutions; women borrowers</td><td>Combines policy reform, intermediation and technical support—an important template for platform-based delivery through financial institutions.</td><td><a href="https://www.adb.org/projects/54424-001/main" target="_blank" rel="noopener">54424-001 ↗</a></td></tr>
+              <tr data-group="mitigation"><td><b>Energy Transition Sector Development Program</b><br><span class="pill mix">Pipeline concept</span></td><td>2026</td><td class="money">TBC</td><td>PBL + FIL + TA</td><td>Government; participating financial institutions; SMEs</td><td>Concept includes a financial intermediation loan for low-interest SME energy-efficiency investment—directly relevant to Platform A.</td><td><a href="https://www.adb.org/projects/58376-001/main" target="_blank" rel="noopener">58376-001 ↗</a></td></tr>
+              <tr data-group="finance"><td><b>Pakistan CPS 2026–2030 financing architecture</b><br><span class="pill mix">Country platform</span></td><td>2026</td><td class="money">Strategy</td><td>Loans, guarantees, TA, private capital mobilization</td><td>Federal/provincial governments; private sector; development partners</td><td>Prioritizes resilience, private-sector development, clean energy and finance mobilization; country overview notes first policy-based guarantee.</td><td><a href="https://www.adb.org/where-we-work/pakistan/overview" target="_blank" rel="noopener">Country overview ↗</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source"><b>Method:</b> Amounts show ADB financing where reported, not total program value or disbursement. Climate attribution can be a subset of project financing. No totals are calculated from this selected table to avoid double counting.</p>
+      </div>
+
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card"><h2>Instrument evolution</h2><div class="chartbox"><canvas id="instrumentChart"></canvas></div><p class="source">Analytical coding of the selected evidence set; one initiative may contain more than one instrument.</p></div>
+        <div class="card"><h2>Gap → proposed response</h2>
+          <table><thead><tr><th>Observed gap</th><th>NCGCL platform response</th></tr></thead><tbody>
+            <tr><td>Project-specific or sovereign delivery</td><td>Aggregate standardized PFI portfolios under one guarantee framework.</td></tr>
+            <tr><td>Small-ticket origination cost</td><td>Common eligibility, vendor panels, digital documentation and portfolio reporting.</td></tr>
+            <tr><td>Perceived SME credit risk</td><td>PFI deductible + calibrated NCGCL risk layer + possible ADB counter-guarantee.</td></tr>
+            <tr><td>Weak climate evidence</td><td>Ex-ante eligibility taxonomy and verified portfolio MRV.</td></tr>
+            <tr><td>Limited long-tenor local capital</td><td>Blend risk capital, concessional resources and PFI balance sheets.</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <section id="platformA" class="section">
+      <div class="pagehead"><div><h2 class="pagetitle">Platform A — Green Asset Finance</h2><p class="pagesub">A portfolio guarantee for distributed climate assets where verified savings or productive revenues support debt service. Recommended as the fastest candidate for joint diagnostic.</p></div><span class="tag">Illustrative pitch</span></div>
+      <div class="grid g4">
+        <div class="card kpi"><div class="label">Indicative pilot</div><div class="value">$25m</div><div class="note">Multi-PFI portfolio; parameter for discussion only.</div></div>
+        <div class="card kpi"><div class="label">Average ticket</div><div class="value">$50k</div><div class="note">Expected to vary materially by asset window.</div></div>
+        <div class="card kpi"><div class="label">Indicative tenor</div><div class="value">3–7y</div><div class="note">Matched to asset life, savings and borrower cash flows.</div></div>
+        <div class="card kpi"><div class="label">Risk principle</div><div class="value">PFI first</div><div class="note">A deductible/first-loss layer preserves underwriting discipline.</div></div>
+      </div>
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card"><h2>Proposed transaction architecture</h2>
+          <div class="structure"><div class="actor"><b>ADB</b><small>TA • concessional capital • funded risk layer or counter-guarantee</small></div><div class="arrow">→</div><div class="actor primary"><b>NCGCL platform</b><small>Eligibility • guarantee • portfolio controls • claims • MRV</small></div><div class="arrow">→</div><div class="actor"><b>PFIs</b><small>Origination • credit decision • disbursement • monitoring • collections</small></div></div>
+          <div class="structure"><div class="actor"><b>Vendors / insurers</b><small>Technical standards, warranties, O&M and asset protection</small></div><div class="arrow">→</div><div class="actor primary"><b>Borrower + green asset</b><small>Equity contribution and repayment supported by savings/productive cash flow</small></div><div class="arrow">→</div><div class="actor"><b>Verifier / MIS</b><small>Installation, generation, savings and climate-performance data</small></div></div>
+          <h3>Illustrative loss allocation</h3>
+          <div class="waterfall"><div class="wf1" style="width:20%">PFI deductible</div><div class="wf2" style="width:40%">NCGCL covered layer</div><div class="wf3" style="width:20%">ADB risk support</div><div class="wf4" style="width:20%">Residual / exclusions</div></div>
+          <p class="source">Waterfall is conceptual. Attachment/detachment, counter-guarantee mechanics and recoveries must be reconciled against NCGCL policy and ADB instrument rules.</p>
+        </div>
+        <div class="card"><h2>Illustrative risk-sizing sandbox</h2><p>Adjust the assumptions to see first-order expected-loss and NCGCL risk effects. This is not a pricing or capital model.</p>
+          <div class="inputgrid">
+            <div class="field"><label for="aPortfolio">Portfolio • $m</label><input id="aPortfolio" type="range" min="5" max="100" value="25" step="5"><output id="aPortfolioOut">$25m</output></div>
+            <div class="field"><label for="aPd">PD</label><input id="aPd" type="range" min="1" max="12" value="4.5" step=".5"><output id="aPdOut">4.5%</output></div>
+            <div class="field"><label for="aLgd">LGD</label><input id="aLgd" type="range" min="20" max="80" value="55" step="5"><output id="aLgdOut">55%</output></div>
+            <div class="field"><label for="aDed">PFI deductible</label><input id="aDed" type="range" min="0" max="8" value="2" step=".5"><output id="aDedOut">2%</output></div>
+            <div class="field"><label for="aCover">NCGCL cover</label><input id="aCover" type="range" min="20" max="80" value="50" step="5"><output id="aCoverOut">50%</output></div>
+            <div class="field"><label for="aAdb">ADB counter-cover</label><input id="aAdb" type="range" min="0" max="80" value="50" step="5"><output id="aAdbOut">50%</output></div>
+          </div>
+          <div class="results">
+            <div class="result"><small>Gross EL</small><b id="rEl">$0.62m</b></div><div class="result"><small>PFI deductible</small><b id="rDed">$0.50m</b></div><div class="result"><small>NCGCL gross EL share</small><b id="rNcgcl">$0.06m</b></div><div class="result"><small>NCGCL net after ADB</small><b id="rNet">$0.03m</b></div>
+          </div>
+          <p class="source">Simplified formula: portfolio × PD × LGD, less portfolio-level deductible, then guarantee and counter-cover shares. A real model requires default correlation, vintage curves, recoveries, timing, concentration, stress loss and capital.</p>
+        </div>
+      </div>
+      <div class="grid g3" style="margin-top:16px">
+        <div class="card"><h2>Eligible windows</h2><div class="chips"><span class="chip">Green schools</span><span class="chip">Solar cold storage</span><span class="chip">SME rooftop solar</span><span class="chip">Motors & boilers</span><span class="chip">Clean production</span><span class="chip">Efficient cooling</span></div><p>Start with assets that have standardized specifications, vendor accountability, observable savings and secondary-use value.</p></div>
+        <div class="card"><h2>Key credit controls</h2><div class="riskgrid" style="grid-template-columns:1fr"><div class="risk high"><b>Performance risk</b>Approved vendors, warranties, insurance and independent commissioning.</div><div class="risk med"><b>Savings shortfall</b>Base underwriting on stressed savings and core borrower cash flow—not savings alone.</div><div class="risk low"><b>Portfolio discipline</b>PFI deductible, concentration caps, stop-loss and vintage triggers.</div></div></div>
+        <div class="card"><h2>MRV spine</h2><table><tbody><tr><td>Financial</td><td>Disbursed amount, arrears, defaults, recoveries, claims</td></tr><tr><td>Asset</td><td>Type, capacity, installation and operating status</td></tr><tr><td>Climate</td><td>Energy saved/generated and verified tCO₂e</td></tr><tr><td>Development</td><td>SMEs/beneficiaries, jobs, women-owned/managed entities</td></tr></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="platformB" class="section">
+      <div class="pagehead"><div><h2 class="pagetitle">Platform B — Digitally Controlled Working Capital</h2><p class="pagesub">Short-tenor portfolio finance in which approved uses, transaction flows and repayment sources are visible through platforms, suppliers, aggregators or controlled accounts.</p></div><span class="tag">Illustrative pitch</span></div>
+      <div class="grid g4">
+        <div class="card kpi"><div class="label">Indicative pilot</div><div class="value">$15m</div><div class="note">One or two value chains before multi-sector expansion.</div></div>
+        <div class="card kpi"><div class="label">Indicative tenor</div><div class="value">30–180d</div><div class="note">Self-liquidating facilities aligned to trading/production cycles.</div></div>
+        <div class="card kpi"><div class="label">Core data</div><div class="value">3 flows</div><div class="note">Supplier payment, sale/receivable and repayment evidence.</div></div>
+        <div class="card kpi"><div class="label">Primary risk</div><div class="value">Leakage</div><div class="note">Control of use and proceeds is more important than app access alone.</div></div>
+      </div>
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card"><h2>Controlled transaction loop</h2>
+          <div class="flow"><div class="flowbox"><b>1 • Approved order</b><span>Verified borrower, supplier, limit and eligible use.</span></div><div class="arrow">→</div><div class="flowbox"><b>2 • Direct payment</b><span>PFI pays supplier or approved counterparty.</span></div><div class="arrow">→</div><div class="flowbox"><b>3 • Observable sale</b><span>Platform/aggregator records fulfillment and proceeds.</span></div><div class="arrow">→</div><div class="flowbox"><b>4 • Auto repayment</b><span>Controlled collection account repays facility.</span></div></div>
+          <p class="source">Digital data supplements—not replaces—credit judgment, KYC/AML, borrower verification and enforceable repayment arrangements.</p>
+        </div>
+        <div class="card"><h2>Borrowing-base logic</h2><div class="chartbox"><canvas id="borrowingChart"></canvas></div><p class="source">Illustrative PKR million example: eligible receivables/inventory are haircut for dilution, concentration and operational leakage before guarantee eligibility.</p></div>
+      </div>
+      <div class="grid g3" style="margin-top:16px">
+        <div class="card"><h2>Candidate windows</h2><table><tbody><tr><td>E-commerce sellers</td><td>Platform sales and settlement data</td></tr><tr><td>Agri input dealers</td><td>Supplier invoices and seasonal repayment</td></tr><tr><td>Processors / aggregators</td><td>Purchase orders, throughput and receivables</td></tr><tr><td>Export-linked SMEs</td><td>Confirmed orders and controlled proceeds</td></tr></tbody></table></div>
+        <div class="card"><h2>Early-warning triggers</h2><div class="riskgrid" style="grid-template-columns:1fr"><div class="risk high"><b>Red</b>Proceeds diversion, duplicate financing, sharp refund/dilution spike.</div><div class="risk med"><b>Amber</b>Sales decline, inventory aging, buyer concentration or missed data feed.</div><div class="risk low"><b>Green</b>Stable turnover, verified orders, on-time settlements and clean repayment.</div></div></div>
+        <div class="card"><h2>ADB / NCGCL division of labor</h2><table><tbody><tr><td>ADB</td><td>Market diagnostic, data/consumer-protection standards, TA and risk capital</td></tr><tr><td>NCGCL</td><td>Guarantee design, eligibility, portfolio triggers, claims and recoveries</td></tr><tr><td>PFI</td><td>Credit decision, KYC/AML, limit setting, monitoring and collections</td></tr><tr><td>Platform</td><td>Operational data and payment controls; no delegated final credit approval</td></tr></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="platformC" class="section">
+      <div class="pagehead"><div><h2 class="pagetitle">Platform C — Cluster & Shared-Infrastructure Finance</h2><p class="pagesub">Finance an anchor operator, service company, cooperative or ring-fenced SPV that aggregates demand and cash flows across a cluster of small producers.</p></div><span class="tag">Illustrative pitch</span></div>
+      <div class="grid g4">
+        <div class="card kpi"><div class="label">Indicative pilot</div><div class="value">$30m</div><div class="note">Two or three clusters with replicable operating models.</div></div>
+        <div class="card kpi"><div class="label">Typical tenor</div><div class="value">5–10y</div><div class="note">Requires long-lived contracts and maintenance discipline.</div></div>
+        <div class="card kpi"><div class="label">Bankability anchor</div><div class="value">Throughput</div><div class="note">Minimum use, service contracts, off-take or availability payments.</div></div>
+        <div class="card kpi"><div class="label">Readiness</div><div class="value">Lower</div><div class="note">Highest preparation need; potentially highest structural impact.</div></div>
+      </div>
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card"><h2>Cluster structure</h2>
+          <div class="structure"><div class="actor"><b>Producers / MSMEs</b><small>Service agreements, minimum volumes and user fees</small></div><div class="arrow">→</div><div class="actor primary"><b>Anchor / SPV</b><small>Owns or operates shared asset; receives ring-fenced revenues</small></div><div class="arrow">→</div><div class="actor"><b>PFI + NCGCL</b><small>Senior financing, covenants and calibrated portfolio/project guarantee</small></div></div>
+          <div class="structure"><div class="actor"><b>Off-taker</b><small>Purchase agreement, quality standards and payment visibility</small></div><div class="arrow">→</div><div class="actor primary"><b>Controlled account</b><small>Revenue waterfall: O&M → debt service → reserves → distributions</small></div><div class="arrow">→</div><div class="actor"><b>ADB support</b><small>Preparation, viability support, risk capital, safeguards and MRV</small></div></div>
+        </div>
+        <div class="card"><h2>Utilization sensitivity</h2><div class="chartbox"><canvas id="clusterChart"></canvas></div><p class="source">Illustrative indexed economics. Debt sizing must use contracted/base utilization and withstand downside throughput.</p></div>
+      </div>
+      <div class="grid g3" style="margin-top:16px">
+        <div class="card"><h2>Candidate assets</h2><div class="chips"><span class="chip">Cold rooms</span><span class="chip">Pack houses</span><span class="chip">Warehouses</span><span class="chip">Dryers</span><span class="chip">Milk chilling</span><span class="chip">Mechanization-as-a-service</span><span class="chip">Near-farm processing</span></div><p>Prioritize assets with measurable throughput, defensible catchments, professional O&M and identifiable off-takers.</p></div>
+        <div class="card"><h2>Bankability gates</h2><table><tbody><tr><td>Demand</td><td>Independent catchment and willingness-to-pay study</td></tr><tr><td>Operator</td><td>Technical capacity, equity at risk and audited governance</td></tr><tr><td>Revenue</td><td>Contracted volumes, off-take and controlled collections</td></tr><tr><td>Asset</td><td>EPC, O&M, insurance and lifecycle reserve</td></tr><tr><td>E&S</td><td>Land, labor, community and environmental safeguards</td></tr></tbody></table></div>
+        <div class="card"><h2>Risk allocation</h2><div class="riskgrid" style="grid-template-columns:1fr"><div class="risk high"><b>Demand / utilization</b>Primarily operator and sponsors; mitigated by contracts and phased capacity.</div><div class="risk med"><b>Construction / performance</b>Fixed-price EPC, performance tests, warranties and delay protections.</div><div class="risk low"><b>Portfolio credit layer</b>NCGCL should cover defined credit loss—not open-ended commercial underperformance.</div></div></div>
+      </div>
+    </section>
+
+    <section id="partnership" class="section">
+      <div class="pagehead"><div><h2 class="pagetitle">Proposed ADB–NCGCL Partnership</h2><p class="pagesub">A modular partnership: jointly diagnose one market, design the risk and delivery architecture, launch a controlled pilot, then scale only after evidence.</p></div><span class="tag">Meeting discussion</span></div>
+      <div class="grid g2">
+        <div class="card">
+          <h2>Comparative platform scorecard</h2><p>Change the weights to reflect Ammar’s priorities. Scores are provisional management judgments (1 = weak, 5 = strong).</p>
+          <div class="tablewrap"><table class="scoretable"><thead><tr><th>Criterion</th><th>Weight</th><th>A • Green</th><th>B • Digital WC</th><th>C • Clusters</th></tr></thead><tbody>
+            <tr><td>ADB strategic alignment</td><td><input class="weight" type="number" value="20" min="0" max="100"></td><td data-score="5">5</td><td data-score="4">4</td><td data-score="5">5</td></tr>
+            <tr><td>Climate additionality</td><td><input class="weight" type="number" value="20" min="0" max="100"></td><td data-score="5">5</td><td data-score="3">3</td><td data-score="5">5</td></tr>
+            <tr><td>Market readiness</td><td><input class="weight" type="number" value="15" min="0" max="100"></td><td data-score="4">4</td><td data-score="3">3</td><td data-score="2">2</td></tr>
+            <tr><td>Data readiness</td><td><input class="weight" type="number" value="10" min="0" max="100"></td><td data-score="4">4</td><td data-score="4">4</td><td data-score="2">2</td></tr>
+            <tr><td>Scalability</td><td><input class="weight" type="number" value="15" min="0" max="100"></td><td data-score="5">5</td><td data-score="5">5</td><td data-score="3">3</td></tr>
+            <tr><td>NCGCL capital efficiency</td><td><input class="weight" type="number" value="10" min="0" max="100"></td><td data-score="4">4</td><td data-score="5">5</td><td data-score="3">3</td></tr>
+            <tr><td>Speed to pilot</td><td><input class="weight" type="number" value="10" min="0" max="100"></td><td data-score="5">5</td><td data-score="4">4</td><td data-score="2">2</td></tr>
+          </tbody><tfoot><tr><th>Weighted score / 5</th><th id="weightTotal">100%</th><th class="score" id="scoreA">4.60</th><th class="score" id="scoreB">3.95</th><th class="score" id="scoreC">3.55</th></tr></tfoot></table></div>
+          <p class="source">The tool ranks concepts; it does not replace feasibility, policy compliance, safeguards or ADB due diligence.</p>
+        </div>
+        <div class="card"><h2>Modular ask from ADB</h2>
+          <div class="riskgrid" style="grid-template-columns:1fr 1fr">
+            <div class="risk low"><b>1 • Diagnostic TA</b>Market sizing, borrower economics, PFI constraints, pipeline and climate additionality.</div>
+            <div class="risk low"><b>2 • Product preparation</b>Eligibility, underwriting, guarantees, claims, legal documentation and operating manual.</div>
+            <div class="risk med"><b>3 • Funded risk capital</b>First-loss reserve or funded risk participation calibrated to modeled loss.</div>
+            <div class="risk med"><b>4 • Counter-guarantee</b>Share NCGCL’s covered risk to expand capital-efficient portfolio capacity.</div>
+            <div class="risk low"><b>5 • PFI / MIS support</b>Data standards, digital reporting, safeguards, climate tagging and capacity building.</div>
+            <div class="risk med"><b>6 • Scale capital</b>FIL, concessional line or mobilized cofinancing after pilot performance is evidenced.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px"><h2>Proposed preparation pathway</h2>
+        <div class="timeline">
+          <div class="phase"><b>Joint diagnostic</b><span>0–60 days • choose market, size pipeline, map barriers, validate climate logic and select PFIs.</span></div>
+          <div class="phase"><b>Product design</b><span>61–120 days • risk model, eligibility, pricing, legal structure, safeguards, MIS and MRV.</span></div>
+          <div class="phase"><b>Controlled pilot</b><span>6–18 months • one platform, limited windows, predefined caps, stop-loss and learning agenda.</span></div>
+          <div class="phase"><b>Evidence-led scale</b><span>Post-pilot • recalibrate using vintage performance; add PFIs, sectors and mobilized capital.</span></div>
+        </div>
+      </div>
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card"><h2>Five meeting asks</h2><div class="asklist">
+          <div class="ask"><div><b>Confirm interest in an NCGCL-centered risk-sharing platform</b><p>Position the discussion around scalable financial intermediation, not a one-off asset or borrower.</p></div></div>
+          <div class="ask"><div><b>Select one priority market for joint preparation</b><p>Propose Platform A, starting with one or two standardized asset windows.</p></div></div>
+          <div class="ask"><div><b>Identify the best ADB instrument and operating team</b><p>Clarify sovereign/nonsovereign route, FIL, TA, funded risk support and counter-guarantee feasibility.</p></div></div>
+          <div class="ask"><div><b>Agree a diagnostic workstream and data request</b><p>Include demand, pipeline, PFI constraints, risk calibration, safeguards and MRV.</p></div></div>
+          <div class="ask"><div><b>Nominate focal persons and a 30-day follow-up</b><p>Convert conceptual interest into a scoped preparation note and responsibilities matrix.</p></div></div>
+        </div>
+        <div class="card"><h2>Items requiring internal validation before ADB circulation</h2>
+          <details open><summary>NCGCL policy and capital</summary><div>Maximum coverage, eligible counterparties and sectors, deductible/first-loss permissibility, concentration limits, guarantee fee, capital treatment, claims and recovery sharing.</div></details>
+          <details><summary>Platform commercial assumptions</summary><div>Portfolio size, ticket, tenor, PFI appetite, borrower equity, PD/LGD, attachment/detachment, pipeline, pricing and stressed loss.</div></details>
+          <details><summary>ADB portfolio evidence</summary><div>Reconcile approvals, commitments, disbursements, climate attribution, cofinancing and status at project level. Confirm pipeline content with ADB.</div></details>
+          <details><summary>External presentation clearance</summary><div>Approve public/internal disclosure, ADB name and logo use, source wording, disclaimers, unpublished concepts and meeting-specific asks.</div></details>
+          <details><summary>Safeguards and MRV</summary><div>Confirm climate taxonomy, emissions factors, adaptation logic, E&S screening, gender indicators, independent verification and reporting frequency.</div></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">
+    <b>Source registry:</b> ADB Pakistan Country Climate Investment and Action Plan / CPS 2026–2030; ADB project pages 58054-001, 49038-001, 50316-001, 49056-002, 54424-001, 58376-001; ADB Sustainable Energy Sector Reform news release; ADB Pakistan country overview. Accessed 28 July 2026. Public links are embedded in the portfolio table. <br><br>
+  </div>
+
+  <script>
+    const tabs=[...document.querySelectorAll('.nav button')];
+    function openTab(id){
+      document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));
+      tabs.forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+      history.replaceState(null,'','#'+id);
+      window.scrollTo({top:0,behavior:'smooth'});
+      setTimeout(drawAll,80);
+    }
+    tabs.forEach(b=>b.addEventListener('click',()=>openTab(b.dataset.tab)));
+    const initial=location.hash.slice(1); if(document.getElementById(initial)) openTab(initial);
+
+    document.getElementById('portfolioFilter').addEventListener('change',e=>{
+      document.querySelectorAll('#portfolioBody tr').forEach(r=>r.style.display=(e.target.value==='all'||r.dataset.group===e.target.value)?'':'none');
+    });
+
+    function canvasSetup(id){
+      const c=document.getElementById(id); if(!c||c.offsetParent===null)return null;
+      const ratio=window.devicePixelRatio||1, rect=c.getBoundingClientRect();
+      c.width=rect.width*ratio;c.height=rect.height*ratio;
+      const x=c.getContext('2d');x.setTransform(ratio,0,0,ratio,0,0);
+      return {c,x,w:rect.width,h:rect.height};
+    }
+    function bars(id,labels,data,colors,unit=''){
+      const s=canvasSetup(id);if(!s)return;const {x,w,h}=s,p={l:44,r:12,t:18,b:54},max=Math.max(...data)*1.15;
+      x.clearRect(0,0,w,h);x.strokeStyle='#dbe3ea';x.fillStyle='#64748b';x.font='10px Arial';x.textAlign='right';
+      for(let i=0;i<=4;i++){const y=p.t+(h-p.t-p.b)*i/4;x.beginPath();x.moveTo(p.l,y);x.lineTo(w-p.r,y);x.stroke();x.fillText((max*(1-i/4)).toFixed(0),p.l-7,y+3)}
+      const slot=(w-p.l-p.r)/data.length,bw=Math.min(58,slot*.58);
+      data.forEach((v,i)=>{const bh=(h-p.t-p.b)*v/max,xx=p.l+i*slot+(slot-bw)/2,yy=h-p.b-bh;x.fillStyle=colors[i%colors.length];x.fillRect(xx,yy,bw,bh);x.fillStyle='#173247';x.textAlign='center';x.font='bold 10px Arial';x.fillText(unit+v,xx+bw/2,yy-6);x.fillStyle='#64748b';x.font='9px Arial';wrap(x,labels[i],xx+bw/2,h-p.b+14,slot-6,10)});
+    }
+    function lineChart(id,labels,series){
+      const s=canvasSetup(id);if(!s)return;const {x,w,h}=s,p={l:38,r:14,t:20,b:42},vals=series.flatMap(a=>a.data),max=Math.max(...vals)*1.12,min=Math.min(0,...vals);
+      x.clearRect(0,0,w,h);x.strokeStyle='#dbe3ea';for(let i=0;i<=4;i++){let y=p.t+(h-p.t-p.b)*i/4;x.beginPath();x.moveTo(p.l,y);x.lineTo(w-p.r,y);x.stroke()}
+      const sx=i=>p.l+(w-p.l-p.r)*i/(labels.length-1),sy=v=>h-p.b-(h-p.t-p.b)*(v-min)/(max-min);
+      series.forEach(a=>{x.strokeStyle=a.color;x.lineWidth=3;x.beginPath();a.data.forEach((v,i)=>i?x.lineTo(sx(i),sy(v)):x.moveTo(sx(i),sy(v)));x.stroke();a.data.forEach((v,i)=>{x.fillStyle=a.color;x.beginPath();x.arc(sx(i),sy(v),4,0,Math.PI*2);x.fill()})});
+      x.fillStyle='#64748b';x.textAlign='center';x.font='10px Arial';labels.forEach((l,i)=>x.fillText(l,sx(i),h-18));
+      x.textAlign='left';series.forEach((a,i)=>{x.fillStyle=a.color;x.fillRect(p.l+i*120,4,10,10);x.fillStyle='#475569';x.fillText(a.name,p.l+14+i*120,13)});
+    }
+    function wrap(ctx,text,x,y,maxWidth,lineHeight){const words=text.split(' ');let line='';for(let n=0;n<words.length;n++){let test=line+words[n]+' ';if(ctx.measureText(test).width>maxWidth&&n>0){ctx.fillText(line,x,y);line=words[n]+' ';y+=lineHeight}else line=test}ctx.fillText(line,x,y)}
+    function drawAll(){
+      bars('overviewChart',['Climate resilience PBL','Access to clean energy','Energy reform SP3','Flood reconstruction','NDRMF','Women inclusive finance'],[500,325,300,220,200,155.5],['#0f766e','#0c688d','#39a935','#0e7490','#2f855a','#84cc16'],'$');
+      bars('instrumentChart',['Policy-based lending','Project / MFF','Financial intermediation','Dedicated risk fund','Guarantee precedent'],[3,2,2,1,1],['#0c688d','#0f766e','#39a935','#f59e0b','#64748b']);
+      bars('borrowingChart',['Gross eligible assets','Concentration haircut','Dilution / returns','Operational leakage','Eligible borrowing base'],[100,15,8,7,70],['#0c688d','#f59e0b','#f59e0b','#b91c1c','#39a935']);
+      lineChart('clusterChart',['40%','55%','70%','85%','100%'],[{name:'Revenue index',color:'#0c688d',data:[44,61,78,94,110]},{name:'Debt service',color:'#b91c1c',data:[60,60,60,60,60]},{name:'Operating cost',color:'#f59e0b',data:[38,43,48,54,60]}]);
+    }
+    window.addEventListener('resize',()=>setTimeout(drawAll,80));setTimeout(drawAll,120);
+
+    const ids=['aPortfolio','aPd','aLgd','aDed','aCover','aAdb'];
+    function calc(){
+      const p=+aPortfolio.value,pd=+aPd.value/100,lgd=+aLgd.value/100,ded=+aDed.value/100,cov=+aCover.value/100,adb=+aAdb.value/100;
+      aPortfolioOut.value='$'+p+'m';aPdOut.value=(pd*100).toFixed(1)+'%';aLgdOut.value=(lgd*100).toFixed(0)+'%';aDedOut.value=(ded*100).toFixed(1)+'%';aCoverOut.value=(cov*100).toFixed(0)+'%';aAdbOut.value=(adb*100).toFixed(0)+'%';
+      const el=p*pd*lgd,d=p*ded,n=Math.max(0,el-d)*cov,net=n*(1-adb);
+      rEl.textContent='$'+el.toFixed(2)+'m';rDed.textContent='$'+d.toFixed(2)+'m';rNcgcl.textContent='$'+n.toFixed(2)+'m';rNet.textContent='$'+net.toFixed(2)+'m';
+    }
+    ids.forEach(id=>document.getElementById(id).addEventListener('input',calc));calc();
+
+    function score(){
+      const rows=[...document.querySelectorAll('.scoretable tbody tr')],weights=rows.map(r=>+r.querySelector('input').value||0),total=weights.reduce((a,b)=>a+b,0);
+      const sc=[0,1,2].map(j=>rows.reduce((sum,r,i)=>sum+weights[i]*(+r.querySelectorAll('[data-score]')[j].dataset.score),0)/(total||1));
+      weightTotal.textContent=total+'%';weightTotal.style.color=total===100?'#166534':'#b91c1c';
+      scoreA.textContent=sc[0].toFixed(2);scoreB.textContent=sc[1].toFixed(2);scoreC.textContent=sc[2].toFixed(2);
+    }
+    document.querySelectorAll('.weight').forEach(i=>i.addEventListener('input',score));score();
+  </script>
+</body>
+</html>
